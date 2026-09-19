@@ -1,9 +1,11 @@
 <!-- Source: Best-README-Template BLANK_README (Unlicense) — https://github.com/othneildrew/Best-README-Template -->
 <a id="readme-top"></a>
 
-# Paiza
+# paiza
 
-Paiza has no README describing its purpose; its manifest (go.mod) marks it as a Go codebase, built with Go.
+A collection of independent Go programs, one per directory, each solving a single paiza.jp coding-practice problem by reading its judge-formatted standard input and printing the expected answer.
+
+**English** · [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/anyingiit/paiza/actions/workflows/ci.yml/badge.svg)](https://github.com/anyingiit/paiza/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/anyingiit/paiza)](LICENSE)
@@ -24,27 +26,57 @@ Paiza has no README describing its purpose; its manifest (go.mod) marks it as a 
 
 ## About The Project
 
-Paiza has no README describing its purpose; its manifest (go.mod) marks it as a Go codebase, built with Go.
+Each directory in this repository is named after a paiza.jp practice-problem ID
+(`D007`, `D170`, and so on) and holds one self-contained Go program: a
+`package main` whose `main()` reads that problem's input straight from stdin,
+in the exact format paiza's judge sends it, and prints the single computed
+answer. A few of the solutions (`D156`, `D189`, `D200`) read a two-line,
+N-by-M grid of numbers through a shared `GetInputWithPaizaStanderedDatas`
+helper; `lib/standerInputV3.31` and the numbered `playground/standerInputV3`
+directories keep the successive drafts of that same input parser from before
+it was copied into the solved problems.
 
-See the [open issues](https://github.com/anyingiit/paiza/issues) for planned features and known issues.
+This repository is archived: it is a record of problems paiza's own judge has
+already accepted, not a tool under active development. Some directories (for
+example `D007` and `D170`) also carry a `docment.md` or `document.md` file
+reproducing the paiza.jp problem statement in full, including its own sample
+input/output, alongside a note on the score the submitted solution received;
+that text originates from paiza.jp, not from this repository's author.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Git
+- Go 1.18 or newer, the floor declared in `go.mod`
 
 ### Installation
 
 ```sh
 git clone https://github.com/anyingiit/paiza.git
 cd paiza
+go build ./...
 ```
+
+`go build ./...` compiles every directory's solution as its own binary; it
+does not produce a single combined program, because there isn't one.
 
 ## Usage
 
+Each directory is a separate program. Run one with `go run` and give it the
+problem's input on stdin, in the format its `document.md`/`docment.md` (where
+present) describes. For example, `D007` prints `N` asterisks for an input `N`:
+
 ```sh
-paiza --help
+go run ./D007 <<< "4"
+# ****
+```
+
+`D170` reads two lines -- a lap distance and a lap count -- and prints their
+product:
+
+```sh
+printf '40\n15\n' | go run ./D170
+# 600
 ```
 
 ## Contributing
