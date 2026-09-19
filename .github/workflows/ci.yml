@@ -1,11 +1,23 @@
 # Source: GitHub starter workflow "Simple workflow" (MIT) — https://github.com/actions/starter-workflows/blob/main/ci/blank.yml
+#
+# Repaired by repocurator (feature 002):
+#   - `push` and `pull_request` triggered on `main`; this repository's default
+#     branch is `master`, so the workflow had never run on a push to it.
+#   - the test job ran the starter's placeholder echo. Every solved problem is
+#     its own `package main` with the computation written inline in main(), so
+#     there is nothing importable to unit-test; `smoketest/smoke_test.go` was
+#     added to build and run D007 and D170 as black-box programs against the
+#     exact input/output pairs paiza.jp's own judge already scored (recorded
+#     in D007/docment.md and D170/document.md) and assert on the printed
+#     output, so a green check now proves the built programs still produce
+#     the judged answer.
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 # The workflow token is read-only by default.
@@ -41,7 +53,14 @@ jobs:
           fi
           echo "All actions are pinned to full-length commit SHAs."
 
-      # Add your project's linters below this line.
+      - name: Check formatting
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt would reformat these files:"
+            echo "$unformatted"
+            exit 1
+          fi
 
   test:
     name: Test
@@ -52,7 +71,12 @@ jobs:
         with:
           persist-credentials: false
 
-      # Replace the step below with your project's test command. Pin any setup
-      # action you add to a full commit SHA, like the checkout step above.
-      - name: Run tests
-        run: echo "No tests yet. Replace this step with your project's test command."
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: '1.18'
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test ./...
